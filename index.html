@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Erica Lorraine Malba — Cybersecurity Portfolio</title>
+  <meta name="description" content="Portfolio of Erica Lorraine Malba — BSIT Cybersecurity student at USLS Bacolod City. Projects, skills, contact." />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ======================================================
+       Erica Lorraine Malba — Wave Background + Custom Cursor
+       - Slow flowing wave background with subtle particles
+       - Interactive project hover spotlight, modals, skills, contact
+       - Custom cursor with smooth follow, hover growth, and click ripple
+       - Single-file HTML/CSS/JS for easy preview and editing
+       ====================================================== */
+
+    :root{
+      --bg-1: #0b0610; /* deep */
+      --bg-2: #29051a; /* subtle gradient */
+      --pink: #ff69b4;
+      --cyan: #4deeea;
+      --violet: #a020f0;
+      --muted: rgba(255,255,255,0.82);
+      --glass: rgba(255,255,255,0.03);
+      --maxw:1200px;
+      --ease: cubic-bezier(.2,.9,.2,1);
+      --cursor-size: 18px;
+    }
+
+    /* ---------------------- Reset ---------------------- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:var(--muted);-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+
+    /* ---------------------- Wave + particle canvas ---------------------- */
+    canvas.wave-layer{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;pointer-events:none}
+
+    /* ---------------------- Custom Cursor ---------------------- */
+    .custom-cursor{
+      position:fixed;left:0;top:0;pointer-events:none;z-index:9999;mix-blend-mode:screen;transition:transform 180ms var(--ease),opacity 180ms var(--ease);will-change:transform,opacity;
+    }
+    .cursor-dot{
+      width:var(--cursor-size);height:var(--cursor-size);border-radius:50%;background:radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95), rgba(255,255,255,0.2));box-shadow:0 0 20px rgba(255,105,180,0.25), 0 0 40px rgba(77,238,234,0.08);
+      transform:translate(-50%,-50%);
+    }
+    .cursor-ring{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(77,238,234,0.12);box-shadow:0 0 40px rgba(77,238,234,0.06);opacity:0.85;transition:all 220ms var(--ease);
+    }
+    .cursor-hidden{opacity:0}
+
+    /* Hover states for cursor when over interactive elements */
+    .cursor-grow .cursor-dot{transform:translate(-50%,-50%) scale(1.8)}
+    .cursor-grow .cursor-ring{transform:translate(-50%,-50%) scale(1.05);opacity:1}
+
+    /* Ripple effect element (created dynamically) */
+    .cursor-ripple{position:fixed;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:9998}
+
+    /* ---------------------- Layout / Container ---------------------- */
+    .container{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+    header{position:fixed;left:0;right:0;top:0;z-index:140;padding:12px 0;background:linear-gradient(180deg, rgba(5,4,5,0.6), rgba(5,4,5,0.15));backdrop-filter: blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    header .inner{display:flex;align-items:center;justify-content:space-between;max-width:var(--maxw);margin:0 auto;padding:0 18px}
+
+    .logo{display:flex;gap:12px;align-items:center}
+    .mark{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--pink),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-family:'JetBrains Mono'}
+    .brand-title{font-family:'JetBrains Mono',monospace;color:var(--pink);font-weight:800}
+
+    nav{display:flex;gap:14px}
+    nav a{padding:8px 10px;border-radius:8px;font-weight:700;color:var(--muted);transition:all 180ms var(--ease)}
+    nav a:hover{color:var(--cyan);transform:translateY(-4px)}
+
+    /* ---------------------- Hero ---------------------- */
+    .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:140px 20px 80px;position:relative;z-index:20}
+    .hero-grid{display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:center;max-width:var(--maxw);margin:0 auto;width:100%}
+
+    .eyebrow{display:inline-block;background:rgba(255,255,255,0.02);padding:8px 12px;border-radius:999px;color:var(--pink);font-weight:900;margin-bottom:12px}
+    .name{font-family:'JetBrains Mono',monospace;font-size:44px;color:var(--pink);line-height:1;letter-spacing:-1px}
+    .sub{font-size:18px;color:var(--cyan);margin-top:6px;font-weight:700}
+    .lead{margin-top:14px;color:rgba(255,255,255,0.92);max-width:640px}
+
+    .profile-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:22px;border:1px solid rgba(255,255,255,0.03);position:relative}
+    .profile-card img{width:220px;height:220px;border-radius:18px;object-fit:cover;border:6px solid rgba(255,105,180,0.12);display:block;margin:0 auto 12px;box-shadow:0 18px 60px rgba(255,105,180,0.06)}
+    .profile-card h3{color:var(--pink);text-align:center;margin:6px 0}
+    .pills{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+    .pill{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:999px;font-weight:800;color:var(--pink);border:1px solid rgba(255,255,255,0.02)}
+
+    .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .btn{padding:10px 16px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--pink),var(--violet));color:#070510;box-shadow:0 18px 60px rgba(160,32,240,0.08)}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+    /* ---------------------- Sections ---------------------- */
+    section{padding:80px 20px;position:relative;z-index:10}
+    .section-title{font-family:'JetBrains Mono',monospace;color:var(--pink);font-size:28px;margin-bottom:18px}
+
+    /* ---------------------- Portfolio Grid ---------------------- */
+    .portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+
+    .project-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03);position:relative;overflow:hidden;transition:transform 320ms var(--ease), box-shadow 320ms var(--ease)}
+    .project-card:hover{transform:translateY(-12px);box-shadow:0 36px 100px rgba(77,238,234,0.06)}
+    .project-card h3{color:var(--pink);margin-bottom:8px}
+    .project-desc{color:rgba(255,255,255,0.9)}
+    .project-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .meta-tag{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:999px;font-weight:800;color:var(--cyan);border:1px solid rgba(255,255,255,0.02)}
+
+    /* spotlight using CSS vars set by JS */
+    .project-card::after{content:'';position:absolute;inset:0;background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%), rgba(77,238,234,0.06), transparent 18%);opacity:0;transition:opacity 220ms var(--ease);pointer-events:none}
+    .project-card:hover::after{opacity:1}
+
+    .project-stats{position:absolute;right:12px;top:12px;display:flex;gap:8px;opacity:0;transform:translateY(-8px);transition:all 220ms var(--ease)}
+    .project-card:hover .project-stats{opacity:1;transform:translateY(0)}
+    .stat-pill{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);font-weight:800;font-size:0.85rem;color:var(--pink);display:flex;align-items:center}
+    .stat-number{color:var(--cyan);font-weight:900;margin-right:6px}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(4,4,6,0.7);display:flex;align-items:center;justify-content:center;z-index:220}
+    .modal{background:linear-gradient(180deg,#0f0911,#13061a);padding:22px;border-radius:12px;max-width:960px;width:92%;border:1px solid rgba(255,255,255,0.04);box-shadow:0 40px 120px rgba(0,0,0,0.6);position:relative}
+    .modal .close{position:absolute;right:18px;top:12px;background:transparent;border:0;color:var(--muted);font-size:20px;cursor:pointer}
+
+    /* skills */
+    .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+    .skill-card{background:var(--glass);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .skill-name{font-weight:800;color:var(--pink);margin-bottom:8px}
+    .skill-bar{height:12px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden}
+    .skill-fill{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--cyan));transition:width 1.6s var(--ease)}
+
+    /* timeline & testimonials */
+    .timeline{display:flex;flex-direction:column;gap:12px}
+    .timeline-item{background:var(--panel);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .timeline-item h4{color:var(--cyan)}
+
+    .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .testimonial{background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+
+    /* contact */
+    .contact-grid{display:grid;grid-template-columns:1fr 420px;gap:24px}
+    .contact-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .contact-form input,.contact-form textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted);margin-bottom:8px}
+    .contact-actions{display:flex;gap:8px}
+
+    footer{padding:24px;text-align:center;color:rgba(255,255,255,0.65);border-top:1px solid rgba(255,255,255,0.02)}
+
+    .reveal{opacity:0;transform:translateY(18px);transition:all 660ms var(--ease)}
+    .reveal.show{opacity:1;transform:translateY(0)}
+
+    @media (max-width:1000px){.hero-grid{grid-template-columns:1fr;gap:20px}.profile-card img{width:180px;height:180px}.contact-grid{grid-template-columns:1fr}.project-stats{display:none}}
+
+  </style>
+</head>
+<body>
+
+  <!-- Wave canvas and subtle particle overlay for interaction -->
+  <canvas id="waveCanvas" class="wave-layer" aria-hidden="true"></canvas>
+  <canvas id="particleCanvas" class="wave-layer" aria-hidden="true" style="z-index:1;opacity:0.9"></canvas>
+
+  <!-- Custom Cursor Elements -->
+  <div id="cursor" class="custom-cursor cursor-hidden" aria-hidden="true">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="inner container">
+      <div class="logo">
+        <div class="mark">E</div>
+        <div>
+          <div class="brand-title">Erica Lorraine</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.45)">BSIT — Cybersecurity</div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="#about">About</a>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#skills">Skills</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main class="hero">
+    <div class="hero-grid container">
+      <div class="intro">
+        <div class="eyebrow">BSIT • Cybersecurity</div>
+        <div class="name"><span class="glitch">Erica Lorraine Malba</span></div>
+        <div class="sub">University of Saint La Salle — Bacolod City</div>
+        <p class="lead">I design secure systems, practice ethical hacking in safe labs, and build detection tools to help defenders. I enjoy CTFs, IoT security, and mentoring fellow students on cyber hygiene.</p>
+        <div class="hero-cta">
+          <button class="btn primary" id="downloadBtn">Download Résumé</button>
+          <a class="btn ghost" href="#portfolio">See Projects</a>
+          <a class="btn ghost" href="#contact">Contact</a>
+        </div>
+      </div>
+
+      <aside class="profile-card">
+        <img src="skibdi.JPG" alt="Erica Lorraine Malba" id="profilePic">
+        <h3>Erica Lorraine Malba</h3>
+        <p>BSIT Student • Cybersecurity</p>
+        <div class="pills">
+          <div class="pill">Threat Modeling</div>
+          <div class="pill">Network Defense</div>
+          <div class="pill">Digital Forensics</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ABOUT -->
+  <section id="about" class="reveal container">
+    <h2 class="section-title">About</h2>
+    <div style="display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start">
+      <div>
+        <p style="color:rgba(255,255,255,0.92)">Hello — I'm <strong style="color:var(--pink)">Erica Lorraine Malba</strong>, currently studying BSIT with a specialization in Cybersecurity at USLS. I focus on applied defensive techniques: building small SIEM prototypes, designing secure authentication flows, and hardening IoT deployments.</p>
+        <p style="margin-top:12px;color:rgba(255,255,255,0.86)">My approach blends practical lab work with clear documentation so others can learn and reproduce safe experiments. Below are selected projects and resources illustrating my work and interests.</p>
+      </div>
+
+      <aside>
+        <div class="profile-card" style="padding:12px">
+          <div style="font-weight:900;color:var(--pink);margin-bottom:8px">Quick Facts</div>
+          <div style="color:rgba(255,255,255,0.85)">USLS — BSIT (Cybersecurity)</div>
+          <div style="margin-top:6px;color:rgba(255,255,255,0.8)">CTF competitor • IoT tinkerer • Workshop volunteer</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="portfolio" class="reveal container">
+    <h2 class="section-title">Selected Projects</h2>
+    <div class="portfolio-grid">
+
+      <article class="project-card" data-index="1">
+        <div class="project-stats">
+          <div class="stat-pill"><span class="stat-number" data-target="92">0</span>%</div>
+          <div class="stat-pill">Auth</div>
+        </div>
+        <h3>Secure Login System</h3>
+        <p class="project-desc">A secure authentication module demonstrated with salted hashing, rate-limits, password strength checks, and optional OTP via TOTP for second factor.</p>
+        <div class="project-meta">
+          <div class="meta-tag">Python</div>
+          <div class="meta-tag">Flask</div>
+          <div class="meta-tag">TOTP</div>
+        </div>
+      </article>
+
+      <article class="project-card" data-index="2">
+        <div class="project-stats">
+          <div class="stat-pill"><span class="stat-number" data-target="88">0</span>%</div>
+          <div class="stat-pill">IoT</div>
+        </div>
+        <h3>IoT Hardening</h3>
+        <p class="project-desc">Firmware & network hardening for small devices. Secure boot checks, encrypted telemetry using TLS, and resilient reconnection patterns with reconnect backoff.</p>
+        <div class="project-meta">
+          <div class="meta-tag">ESP32</div>
+          <div class="meta-tag">MQTT</div>
+          <div class="meta-tag">TLS</div>
+        </div>
+      </article>
+
+      <article class="project-card" data-index="3">
+        <div class="project-stats">
+          <div class="stat-pill"><span class="stat-number" data-target="95">0</span>%</div>
+          <div class="stat-pill">SIEM</div>
+        </div>
+        <h3>Network Detection Lab</h3>
+        <p class="project-desc">An environment to detect lateral movement and suspicious traffic. Created rules for common exotic behaviors and a playbook for triage and containment.</p>
+        <div class="project-meta">
+          <div class="meta-tag">Zeek</div>
+          <div class="meta-tag">Suricata</div>
+          <div class="meta-tag">Splunk</div>
+        </div>
+      </article>
+
+      <article class="project-card" data-index="4">
+        <div class="project-stats">
+          <div class="stat-pill"><span class="stat-number" data-target="84">0</span>%</div>
+          <div class="stat-pill">Dash</div>
+        </div>
+        <h3>Micro SIEM Dashboard</h3>
+        <p class="project-desc">Prototype consolidating logs, normalizing fields, and exposing prioritized alerts with contextual metadata to speed triage.</p>
+        <div class="project-meta">
+          <div class="meta-tag">Python</div>
+          <div class="meta-tag">ELK</div>
+          <div class="meta-tag">Kibana</div>
+        </div>
+      </article>
+
+      <article class="project-card" data-index="5">
+        <div class="project-stats">
+          <div class="stat-pill"><span class="stat-number" data-target="90">0</span>%</div>
+          <div class="stat-pill">E2EE</div>
+        </div>
+        <h3>Secure Chat Mockup</h3>
+        <p class="project-desc">Demonstrates ephemeral session keys, secure key exchange, and basic forward secrecy ideas in a lightweight chat prototype.</p>
+        <div class="project-meta">
+          <div class="meta-tag">Crypto</div>
+          <div class="meta-tag">WebSockets</div>
+          <div class="meta-tag">React</div>
+        </div>
+      </article>
+
+      <article class="project-card" data-index="6">
+        <div class="project-stats">
+          <div class="stat-pill"><span class="stat-number" data-target="78">0</span>%</div>
+          <div class="stat-pill">FOR</div>
+        </div>
+        <h3>Forensics Toolkit</h3>
+        <p class="project-desc">Scripts for timeline reconstruction, file carving, and snapshotting that help during initial incident response and triage.</p>
+        <div class="project-meta">
+          <div class="meta-tag">Python</div>
+          <div class="meta-tag">Autopsy</div>
+          <div class="meta-tag">Scripting</div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="reveal container">
+    <h2 class="section-title">Skills & Tools</h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-name">Python Security</div>
+        <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">Network Security</div>
+        <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">Penetration Testing</div>
+        <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">Digital Forensics</div>
+        <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-name">Web Security</div>
+        <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline" class="reveal container">
+    <h2 class="section-title">Timeline</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>2024 — Started BSIT (Cybersecurity focus)</h4>
+        <p>Joined the University of Saint La Salle and began structured studies around networks, systems, and security.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>2025 — Security Research & Labs</h4>
+        <p>Worked on lab exercises for detection and created simple automation scripts for log parsing and alerting.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>2026 — Advanced Projects & Workshops</h4>
+        <p>Planning workshops for cyber hygiene and campus security awareness, and deeper research on IoT resiliency.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="reveal container">
+    <h2 class="section-title">Mentors & Peers</h2>
+    <div class="testimonials">
+      <div class="testimonial">
+        <strong>Prof. R.</strong>
+        <p>"Erica produces reproducible lab writeups and communicates findings clearly — a dependable researcher."</p>
+      </div>
+      <div class="testimonial">
+        <strong>Lab Partner</strong>
+        <p>"Fast learner, strong debugging skills, always ready to help others during workshops."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="reveal container">
+    <h2 class="section-title">FAQ</h2>
+    <div style="display:grid;gap:12px;max-width:900px">
+      <details style="background:var(--glass);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)"><summary style="font-weight:800;color:var(--pink)">Can I collaborate with you?</summary><div style="margin-top:8px;color:rgba(255,255,255,0.85)">Yes — I'm open to supervised internships, campus workshops, and guided projects. Use the contact form to connect.</div></details>
+      <details style="background:var(--glass);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)"><summary style="font-weight:800;color:var(--pink)">Do you publish writeups?</summary><div style="margin-top:8px;color:rgba(255,255,255,0.85)">I plan to publish sanitized lab writeups and detection rules that are safe to reproduce in protected environments.</div></details>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="reveal container">
+    <h2 class="section-title">Contact</h2>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <h3 style="color:var(--pink)">Let's Connect</h3>
+        <p style="color:rgba(255,255,255,0.9)">Email: <span id="emailText" style="font-weight:800">erica.malba@usls.edu</span></p>
+        <p style="color:rgba(255,255,255,0.9)">GitHub: <a href="#">github.com/ericalorraine</a></p>
+        <p style="color:rgba(255,255,255,0.9)">LinkedIn: <a href="#">linkedin.com/in/ericalorraine</a></p>
+
+        <div style="margin-top:12px;display:flex;gap:10px">
+          <button class="btn ghost" id="copyEmail">Copy Email</button>
+          <button class="btn ghost" id="openResume">Open Résumé</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <small style="color:rgba(255,255,255,0.6)">Available for internships, campus workshops, and collaborative projects.</small>
+        </div>
+      </div>
+
+      <form id="contactForm" class="contact-card contact-form">
+        <label for="name" style="font-weight:800;color:var(--pink);display:block;margin-bottom:6px">Name</label>
+        <input id="name" name="name" required placeholder="Your name">
+        <label for="email" style="font-weight:800;color:var(--pink);display:block;margin-bottom:6px">Email</label>
+        <input id="email" name="email" type="email" required placeholder="you@example.com">
+        <label for="message" style="font-weight:800;color:var(--pink);display:block;margin-bottom:6px">Message</label>
+        <textarea id="message" name="message" rows="5" required placeholder="Short message..."></textarea>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+          <button type="submit" class="btn primary">Send Message</button>
+          <button type="button" class="btn ghost" id="clearForm">Clear</button>
+        </div>
+        <div id="formStatus" style="margin-top:8px;color:rgba(255,255,255,0.7)"></div>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">© <span id="year"></span> Erica Lorraine Malba — BSIT (Cybersecurity) • University of Saint La Salle</div>
+  </footer>
+
+  <!-- modal root -->
+  <div id="modalRoot" aria-hidden="true"></div>
+
+  <script>
+    // small utilities
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    // set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ==================================================
+       Wave Background Implementation (single canvas) + particles
+       - Slow, smooth waves drawn with sine functions
+       - Particles float and gently respond to pointer
+       - Performance mindful: small particle count, requestAnimationFrame
+       ================================================== */
+    (function(){
+      const waveCanvas = document.getElementById('waveCanvas');
+      const particleCanvas = document.getElementById('particleCanvas');
+      if(!waveCanvas || !particleCanvas) return;
+
+      const wCtx = waveCanvas.getContext('2d');
+      const pCtx = particleCanvas.getContext('2d');
+      const DPR = Math.max(1, window.devicePixelRatio || 1);
+
+      let W=0,H=0;
+      const layers = [
+        {amp: 40, waveLen: 900, speed: 0.12, offset: 0, color: 'rgba(255,105,180,0.09)'},
+        {amp: 26, waveLen: 600, speed: 0.08, offset: 120, color: 'rgba(77,238,234,0.06)'},
+        {amp: 14, waveLen: 380, speed: 0.05, offset: 240, color: 'rgba(160,32,240,0.04)'}
+      ];
+
+      let particles = [];
+      const particleCount = 60;
+      const pointer = {x:-9999,y:-9999,xNorm:0.5,yNorm:0.5};
+
+      function resize(){
+        W = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        H = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        waveCanvas.width = W * DPR; waveCanvas.height = H * DPR; waveCanvas.style.width = W + 'px'; waveCanvas.style.height = H + 'px';
+        particleCanvas.width = W * DPR; particleCanvas.height = H * DPR; particleCanvas.style.width = W + 'px'; particleCanvas.style.height = H + 'px';
+        wCtx.setTransform(DPR,0,0,DPR,0,0); pCtx.setTransform(DPR,0,0,DPR,0,0);
+      }
+
+      function initParticles(){ particles = []; for(let i=0;i<particleCount;i++){ particles.push({x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*3, vx: (Math.random()-0.5)*0.2, vy: (Math.random()-0.5)*0.3, alpha: 0.06 + Math.random()*0.12}); } }
+
+      function drawWaves(t){
+        wCtx.clearRect(0,0,W,H);
+        const g = wCtx.createLinearGradient(0,0,0,H); g.addColorStop(0,'rgba(10,4,10,0.12)'); g.addColorStop(1,'rgba(9,3,12,0.16)'); wCtx.fillStyle = g; wCtx.fillRect(0,0,W,H);
+
+        layers.forEach((L, idx)=>{
+          wCtx.beginPath(); const baseY = H * (0.62 - idx*0.04); const amp = L.amp; const waveLen = L.waveLen; const speed = L.speed;
+          wCtx.moveTo(0, H);
+          wCtx.lineTo(0, baseY);
+          for(let x=0;x<=W;x+=8){ const phase = (t*0.001*speed) + (x/waveLen*2*Math.PI) + (L.offset/100); const dx = (pointer.x - x); const distFactor = Math.max(0, 1 - Math.abs(dx)/(W*0.8)); const parallax = (pointer.xNorm-0.5) * 20 * distFactor; const y = baseY + Math.sin(phase)*amp*(0.7 + 0.3*distFactor) + parallax; wCtx.lineTo(x, y); }
+          wCtx.lineTo(W, H); wCtx.closePath(); const grad = wCtx.createLinearGradient(0, H*0.5, 0, H); grad.addColorStop(0, L.color); grad.addColorStop(1, 'rgba(10,4,10,0.0)'); wCtx.fillStyle = grad; wCtx.globalCompositeOperation = 'lighter'; wCtx.fill(); wCtx.globalCompositeOperation = 'source-over';
+        });
+      }
+
+      function drawParticles(){ pCtx.clearRect(0,0,W,H); for(let i=0;i<particles.length;i++){ const p = particles[i]; p.x += p.vx + (pointer.xNorm-0.5)*0.1; p.y += p.vy + (pointer.yNorm-0.5)*0.08; if(p.x < -10) p.x = W + 10; if(p.x > W + 10) p.x = -10; if(p.y < -10) p.y = H + 10; if(p.y > H + 10) p.y = -10; pCtx.beginPath(); pCtx.arc(p.x, p.y, p.r, 0, Math.PI*2); pCtx.fillStyle = `rgba(255,105,180,${p.alpha})`; pCtx.fill(); } }
+
+      let last = performance.now(); function raf(now){ const dt = now - last; last = now; drawWaves(now); drawParticles(); requestAnimationFrame(raf); }
+
+      window.addEventListener('pointermove', e=>{ pointer.x = e.clientX; pointer.y = e.clientY; pointer.xNorm = pointer.x / W; pointer.yNorm = pointer.y / H; });
+      window.addEventListener('pointerleave', ()=>{ pointer.x = -9999; pointer.y = -9999; pointer.xNorm = 0.5; pointer.yNorm = 0.5; });
+
+      window.addEventListener('resize', ()=>{ resize(); initParticles(); });
+      resize(); initParticles(); requestAnimationFrame(raf);
+    })();
+
+    /* ====================================================================
+       Custom Cursor Implementation
+       - creates a cursor element that follows the pointer with easing
+       - grows when hovering interactive elements (buttons, links, project cards)
+       - creates a soft ripple effect on click
+       ==================================================================== */
+    (function(){
+      const cursorRoot = document.getElementById('cursor');
+      const dot = cursorRoot.querySelector('.cursor-dot');
+      const ring = cursorRoot.querySelector('.cursor-ring');
+
+      let mouse = {x: window.innerWidth/2, y: window.innerHeight/2};
+      let pos = {x: mouse.x, y: mouse.y};
+      let visible = false;
+      const ease = 0.18;
+
+      // show cursor after short delay to avoid flicker on load
+      setTimeout(()=>{ cursorRoot.classList.remove('cursor-hidden'); visible = true; }, 100);
+
+      function lerp(a,b,t){ return a + (b-a)*t; }
+
+      window.addEventListener('pointermove', (e)=>{ mouse.x = e.clientX; mouse.y = e.clientY; if(!visible){ cursorRoot.classList.remove('cursor-hidden'); visible=true; } });
+      window.addEventListener('pointerdown', (e)=>{ createRipple(e.clientX, e.clientY); });
+      window.addEventListener('pointerleave', ()=>{ cursorRoot.classList.add('cursor-hidden'); visible=false; });
+      window.addEventListener('pointerenter', ()=>{ cursorRoot.classList.remove('cursor-hidden'); visible=true; });
+
+      // enlarge cursor when hovering interactive elements
+      const interactiveSelector = 'a, button, .btn, .project-card, input, textarea, details, summary';
+      document.addEventListener('pointerover', (e)=>{ if(e.target && e.target.closest && e.target.closest(interactiveSelector)){ cursorRoot.classList.add('cursor-grow'); } });
+      document.addEventListener('pointerout', (e)=>{ if(e.target && e.target.closest && e.target.closest(interactiveSelector) == null){ cursorRoot.classList.remove('cursor-grow'); } });
+
+      // pointer follow loop
+      function frame(){ pos.x = lerp(pos.x, mouse.x, ease); pos.y = lerp(pos.y, mouse.y, ease); cursorRoot.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`; requestAnimationFrame(frame); }
+      requestAnimationFrame(frame);
+
+      // ripple effect on click
+      function createRipple(x,y){ const ripple = document.createElement('div'); ripple.className = 'cursor-ripple'; const size = 8 + Math.random()*28; ripple.style.width = ripple.style.height = size + 'px'; ripple.style.left = x + 'px'; ripple.style.top = y + 'px'; ripple.style.background = 'radial-gradient(circle, rgba(255,105,180,0.18) 0%, rgba(77,238,234,0.08) 40%, transparent 60%)'; ripple.style.opacity = '0.9'; ripple.style.transition = 'transform 600ms ease-out, opacity 600ms ease-out'; document.body.appendChild(ripple); requestAnimationFrame(()=>{ ripple.style.transform = 'translate(-50%, -50%) scale(4)'; ripple.style.opacity = '0'; }); setTimeout(()=> ripple.remove(), 650);
+      }
+    })();
+
+    /* ====================================================================
+       Reveal & animate fill / counters
+       ==================================================================== */
+    (function(){
+      const reveals = document.querySelectorAll('.reveal');
+      const obs = new IntersectionObserver((entries, ob)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('show'); const fills = en.target.querySelectorAll ? en.target.querySelectorAll('.skill-fill') : []; fills.forEach(f=>{ const w = f.dataset.width || '60'; setTimeout(()=> f.style.width = w+'%', 160); }); ob.unobserve(en.target); } }); }, {threshold:0.18}); reveals.forEach(r=>obs.observe(r));
+
+      // project stat animation on hover
+      document.querySelectorAll('.project-card').forEach(card=>{
+        const nums = card.querySelectorAll('.stat-number');
+        card.addEventListener('mouseenter', ()=> nums.forEach(n=> animateNumber(n, parseInt(n.dataset.target || '0'))));
+        card.addEventListener('mouseleave', ()=> nums.forEach(n=> n.textContent='0'));
+
+        card.addEventListener('pointermove', (e)=>{ const r = card.getBoundingClientRect(); const mx = ((e.clientX - r.left)/r.width)*100; const my = ((e.clientY - r.top)/r.height)*100; card.style.setProperty('--mx', mx+'%'); card.style.setProperty('--my', my+'%'); });
+      });
+
+      function animateNumber(el, target){ const start = 0; const dur = 700; const t0 = performance.now(); (function step(now){ const t = Math.min(1,(now-t0)/dur); const eased = 1 - Math.pow(1-t,3); el.textContent = Math.floor(start + (target-start)*eased); if(t<1) requestAnimationFrame(step); else el.textContent = target; })(t0); }
+    })();
+
+    /* ====================================================================
+       Project modal
+       ==================================================================== */
+    function openModal(title, html){ const root = document.getElementById('modalRoot'); root.innerHTML = ''; root.setAttribute('aria-hidden','false'); const backdrop = document.createElement('div'); backdrop.className = 'modal-backdrop'; const modal = document.createElement('div'); modal.className = 'modal'; modal.innerHTML = `<button class=\"close\" aria-label=\"Close\">×</button><h3>${title}</h3><div>${html}</div>`; backdrop.appendChild(modal); root.appendChild(backdrop); const closeBtn = modal.querySelector('.close'); closeBtn.addEventListener('click', closeModal); backdrop.addEventListener('click', e=>{ if(e.target === backdrop) closeModal(); }); document.addEventListener('keydown', esc);
+      function esc(e){ if(e.key==='Escape') closeModal(); }
+      function closeModal(){ root.innerHTML=''; root.setAttribute('aria-hidden','true'); document.removeEventListener('keydown', esc); }
+    }
+
+    (function(){ document.querySelectorAll('.project-card').forEach(card=>{ card.addEventListener('click', ()=>{ const title = card.querySelector('h3').innerText; const desc = card.querySelector('.project-desc').innerText; const tech = Array.from(card.querySelectorAll('.meta-tag')).map(m=>m.innerText).join(', '); openModal(title, `<p style=\"color:rgba(255,255,255,0.92)\">${desc}</p><p style=\"margin-top:12px;color:rgba(255,255,255,0.86)\"><strong>Stack:</strong> ${tech}</p><hr style=\"border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0\"><p style=\"color:rgba(255,255,255,0.84)\">Replace this area with screenshots or links to demos and code repositories.</p>`); }); }); })();
+
+    /* ====================================================================
+       Contact interactions
+       ==================================================================== */
+    (function(){
+      const form = document.getElementById('contactForm');
+      const status = document.getElementById('formStatus');
+      const copyBtn = document.getElementById('copyEmail');
+      const emailText = document.getElementById('emailText');
+      const clearBtn = document.getElementById('clearForm');
+      const resumeBtn = document.getElementById('openResume');
+
+      copyBtn.addEventListener('click', ()=>{ navigator.clipboard && navigator.clipboard.writeText(emailText.textContent).then(()=>{ copyBtn.textContent = 'Copied!'; setTimeout(()=> copyBtn.textContent = 'Copy Email',1100); }).catch(()=>{ alert('Copy failed.'); }); });
+      clearBtn.addEventListener('click', ()=>{ form.reset(); status.textContent = ''; });
+      resumeBtn.addEventListener('click', ()=>{ openModal('Résumé — Erica Lorraine Malba', `<p style=\"color:rgba(255,255,255,0.9)\"><strong>Education:</strong> BSIT (Cybersecurity) — University of Saint La Salle</p><p style=\"margin-top:8px;color:rgba(255,255,255,0.86)\"><strong>Highlights:</strong> Network labs, SIEM prototype, IoT hardening. Replace with downloadable PDF link when ready.</p><p style=\"margin-top:12px;color:rgba(255,255,255,0.84)\"><a href=\"#\" style=\"color:var(--cyan)\">Download PDF (placeholder)</a></p>`); });
+
+      form.addEventListener('submit', (e)=>{ e.preventDefault(); const name = form.name.value.trim(); const mail = form.email.value.trim(); const msg = form.message.value.trim(); if(!name||!mail||!msg){ status.style.color = '#ff9bb8'; status.textContent = 'Please fill all fields.'; return; } status.style.color = '#66ffe0'; status.textContent = 'Sending (simulated)...'; setTimeout(()=>{ status.textContent = 'Message simulated — thank you!'; form.reset(); }, 1200); });
+    })();
+
+    /* ====================================================================
+       Smooth scroll for nav anchors
+       ==================================================================== */
+    (function(){ document.querySelectorAll('a[href^="#"]').forEach(a=>{ a.addEventListener('click', (e)=>{ const href = a.getAttribute('href'); if(!href || href === '#') return; const t = document.querySelector(href); if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth', block:'start'}); } }); }); })();
+
+  </script>
+</body>
+</html>

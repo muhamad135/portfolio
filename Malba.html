@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Erica Lorraine Malba — Cybersecurity Portfolio</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===========================================================
+       Erica Lorraine Malba — Neon cyber portfolio
+       Designed: Neon pink / purple vibe with wave background
+       Features: side-profile box, about card, skills with numeric
+                 progress, projects grid, particle + matrix, cursor
+       =========================================================== */
+
+    :root{
+      --bg-dark: #0b0710;
+      --card-bg: rgba(18,12,20,0.55);
+      --glass: rgba(255,255,255,0.03);
+      --neon-pink: #ff69b4;
+      --neon-purple: #b36aff;
+      --neon-blue: #4deeea;
+      --accent: linear-gradient(135deg, #ff69b4, #b36aff 40%, #4deeea 100%);
+      --text: #eae6f2;
+      --muted: #a39bb0;
+      --glass-border: rgba(255,105,180,0.12);
+      --shadow: 0 10px 30px rgba(99, 33, 123, 0.18);
+      --radius: 16px;
+      --mono: 'JetBrains Mono', monospace;
+      --ui: 'Inter', sans-serif;
+    }
+
+    /* --- Reset & basics --- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      background: var(--bg-dark);
+      color:var(--text);
+      font-family: var(--ui);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      line-height:1.45;
+    }
+
+    a{color:inherit}
+    img{display:block;max-width:100%}
+
+    /* --- layered background containers (SVG wave, canvas particles) --- */
+    .bg-layer { position: fixed; inset:0; z-index:0; pointer-events:none; }
+
+    /* SVG wave wrapper */
+    #waveWrap{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.55;
+      mix-blend-mode: screen;
+    }
+
+    /* Two canvases: particles + matrix */
+    canvas#particles, canvas#matrix {
+      position: fixed;
+      inset:0;
+      z-index: 0;
+      display:block;
+    }
+
+    /* header / nav */
+    header{
+      position:fixed;
+      left:0;right:0;
+      top:0;
+      z-index:1100;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:20px 6%;
+      background: linear-gradient(180deg, rgba(8,6,10,0.55), rgba(8,6,10,0.28));
+      border-bottom: 1px solid rgba(255,105,180,0.06);
+      backdrop-filter: blur(6px) saturate(120%);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      cursor:pointer;
+    }
+
+    .brand .logo {
+      width:44px;
+      height:44px;
+      border-radius:10px;
+      background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+      box-shadow: 0 6px 20px rgba(179,106,255,0.18), 0 0 16px rgba(255,105,180,0.08) inset;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:var(--mono);
+      font-weight:700;
+      color:#0a0610;
+      font-size:16px;
+    }
+
+    .brand h1{
+      font-family:var(--mono);
+      color:var(--neon-pink);
+      font-size:18px;
+      letter-spacing:0.6px;
+      text-shadow: 0 0 8px rgba(255,105,180,0.18);
+    }
+
+    nav.top-nav{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      font-weight:600;
+      color:var(--text);
+      font-size:14px;
+    }
+
+    nav.top-nav a{
+      padding:8px 12px;
+      border-radius:10px;
+      transition: all 220ms cubic-bezier(.2,.9,.2,1);
+      color:var(--muted);
+      position:relative;
+    }
+
+    nav.top-nav a:hover{
+      color:var(--neon-pink);
+      transform: translateY(-3px);
+      text-shadow: 0 0 8px rgba(255,105,180,0.12);
+    }
+
+    nav.top-nav a::after{
+      content:'';
+      position:absolute;
+      left:8px;
+      right:8px;
+      height:2px;
+      bottom:4px;
+      background: linear-gradient(90deg,var(--neon-pink),var(--neon-purple));
+      opacity:0;
+      transform:scaleX(0);
+      transition: all 220ms ease;
+      border-radius:3px;
+      box-shadow: 0 2px 8px rgba(179,106,255,0.08);
+    }
+
+    nav.top-nav a:hover::after{opacity:1; transform:scaleX(1)}
+
+    /* --- Page layout --- */
+    .page {
+      position:relative;
+      z-index:10;
+      width:100%;
+      min-height:100vh;
+      padding-top:100px; /* account for header */
+    }
+
+    /* --- MAIN grid for hero + sidebar profile --- */
+    .hero-section {
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:40px;
+      align-items:center;
+      padding: 60px 6% 80px 6%;
+      min-height:calc(100vh - 120px);
+    }
+
+    /* profile box (left) */
+    .profile-box{
+      position:relative;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:20px;
+      padding:20px;
+      border: 1px solid rgba(255,105,180,0.06);
+      box-shadow: var(--shadow);
+      min-height:380px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      transition: transform 300ms ease, box-shadow 300ms ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .profile-box:hover{
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px rgba(179,106,255,0.12), 0 0 40px rgba(255,105,180,0.06);
+      border-color: rgba(255,105,180,0.12);
+    }
+
+    .profile-top {
+      display:flex;
+      gap:16px;
+      align-items:center;
+    }
+
+    .profile-photo {
+      width:120px;
+      height:120px;
+      border-radius:14px;
+      overflow:hidden;
+      border:4px solid rgba(255,105,180,0.18);
+      flex-shrink:0;
+      background: linear-gradient(135deg,#ff8ab3,#caa7ff);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 10px 30px rgba(179,106,255,0.08);
+    }
+
+    .profile-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .profile-meta {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding-right:6px;
+    }
+
+    .profile-meta h2{
+      font-family:var(--mono);
+      color:var(--neon-pink);
+      font-size:20px;
+      letter-spacing:0.6px;
+    }
+
+    .profile-meta p{
+      color:var(--muted);
+      font-size:13px;
+      max-width:250px;
+    }
+
+    .profile-stats{
+      display:flex;
+      gap:8px;
+      margin-top:6px;
+    }
+
+    .pill{
+      background: linear-gradient(90deg, rgba(255,105,180,0.06), rgba(179,106,255,0.04));
+      border:1px solid rgba(255,105,180,0.06);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      color:var(--neon-pink);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:600;
+    }
+
+    /* about card inside left column below photo */
+    .about-card{
+      margin-top:8px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:16px;
+      border-radius:12px;
+      border:1px solid rgba(255,105,180,0.04);
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+    }
+
+    .about-card h3{
+      color:var(--neon-blue);
+      font-family:var(--mono);
+      margin-bottom:8px;
+      font-size:14px;
+    }
+
+    .about-card p{ font-size:13px; color:var(--text); }
+
+    /* contact quick links in profile */
+    .contact-quick{
+      margin-top:auto;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+      align-items:center;
+    }
+
+    .contact-btn{
+      background:transparent;
+      border:1px dashed rgba(255,105,180,0.08);
+      padding:8px 12px;
+      border-radius:10px;
+      color:var(--muted);
+      font-weight:600;
+      transition: all 200ms ease;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      cursor:pointer;
+    }
+
+    .contact-btn:hover{
+      color:var(--neon-pink);
+      border-style:solid;
+      transform:translateY(-4px);
+      box-shadow:0 8px 30px rgba(255,105,180,0.06);
+    }
+
+    /* --- Main hero copy (right) --- */
+    .hero-copy {
+      padding:28px;
+      border-radius:20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      border:1px solid rgba(255,105,180,0.03);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+    }
+
+    .hero-copy h1{
+      font-size:40px;
+      margin-bottom:12px;
+      line-height:1.05;
+      background:var(--accent);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      font-family:var(--mono);
+    }
+
+    .hero-copy p.lead{
+      color:var(--muted);
+      font-size:16px;
+      margin-bottom:18px;
+    }
+
+    .cta-row{
+      display:flex;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .cta{
+      padding:12px 18px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      border:1px solid rgba(255,105,180,0.06);
+      background: linear-gradient(90deg, rgba(255,105,180,0.06), rgba(179,106,255,0.04));
+      transition: all 220ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    .cta.primary{
+      background: linear-gradient(90deg,var(--neon-pink),var(--neon-purple));
+      color:#0a0a0a;
+      box-shadow: 0 12px 30px rgba(179,106,255,0.12);
+    }
+
+    .cta:hover{ transform: translateY(-6px); }
+
+    /* --- Skills & progress (inside hero copy) --- */
+    .skills-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .skill-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      border-radius:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      border:1px solid rgba(255,105,180,0.03);
+    }
+
+    .skill-info{
+      flex:1;
+      min-width:0;
+    }
+
+    .skill-title{
+      font-weight:700;
+      color:var(--neon-pink);
+      font-family:var(--mono);
+      margin-bottom:6px;
+      font-size:13px;
+    }
+
+    .progress{
+      width:100%;
+      height:10px;
+      background: rgba(255,255,255,0.04);
+      border-radius:8px;
+      overflow:hidden;
+    }
+
+    .progress .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+      transition: width 1100ms cubic-bezier(.2,.85,.2,1);
+      box-shadow: 0 6px 20px rgba(255,105,180,0.06);
+    }
+
+    .skill-num{
+      width:56px;
+      text-align:right;
+      font-weight:700;
+      color:var(--neon-blue);
+      font-family:var(--mono);
+      font-size:13px;
+    }
+
+    /* --- Projects section (below hero) --- */
+    .projects-section{
+      padding:60px 6%;
+    }
+
+    .projects-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:20px;
+    }
+
+    .project-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,105,180,0.04);
+      border-radius:14px;
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:210px;
+      transition: transform 260ms ease, box-shadow 260ms ease;
+    }
+
+    .project-card:hover{
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 30px 60px rgba(179,106,255,0.06), 0 0 40px rgba(255,105,180,0.03);
+    }
+
+    .project-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .project-title{
+      font-size:16px;
+      font-weight:700;
+      color:var(--neon-pink);
+      font-family:var(--mono);
+      letter-spacing:0.2px;
+    }
+
+    .project-desc{
+      flex:1;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .project-tags{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+
+    .tag{
+      background: rgba(255,255,255,0.03);
+      padding:6px 10px;
+      font-size:12px;
+      border-radius:999px;
+      border:1px solid rgba(255,105,180,0.04);
+      color:var(--neon-blue);
+      font-weight:700;
+    }
+
+    .project-actions{
+      margin-top:auto;
+      display:flex;
+      gap:8px;
+    }
+
+    .btn{
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,105,180,0.05);
+      background:transparent;
+      font-weight:700;
+      cursor:pointer;
+      transition: all 180ms ease;
+    }
+
+    .btn:hover{
+      transform: translateY(-4px);
+      color:var(--neon-pink);
+      border-color: rgba(255,105,180,0.12);
+    }
+
+    .btn-outline{
+      border-style:dashed;
+    }
+
+    /* Project modal (hidden by default) */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+      background: rgba(5,4,8,0.6);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity 240ms ease;
+    }
+
+    .modal.open{ opacity:1; pointer-events:auto; }
+
+    .modal-card{
+      width: min(920px, 94%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px;
+      padding:22px;
+      border:1px solid rgba(255,105,180,0.06);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      transform:translateY(20px);
+    }
+
+    .modal.open .modal-card{ transform:translateY(0) }
+
+    .modal-close{
+      background:transparent;
+      border:0;
+      color:var(--muted);
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    /* --- Contact section --- */
+    .contact-section{
+      padding:60px 6%;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:24px;
+      align-items:start;
+    }
+
+    .contact-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      border-radius:14px;
+      padding:20px;
+      border:1px solid rgba(255,105,180,0.04);
+    }
+
+    .contact-card h3{ color:var(--neon-pink); font-family:var(--mono) }
+    .contact-list{ display:flex; flex-direction:column; gap:12px; margin-top:10px }
+    .contact-item{
+      display:flex; gap:10px; align-items:center;
+      border-radius:10px; padding:10px;
+      background: rgba(255,255,255,0.01);
+      border:1px solid rgba(255,105,180,0.02);
+    }
+
+    .contact-item strong{ color:var(--neon-blue); font-family:var(--mono) }
+
+    /* form styling */
+    form.contact-form{ display:flex; flex-direction:column; gap:12px }
+    .field{ display:flex; flex-direction:column; gap:6px }
+    .field label{ font-size:13px; color:var(--muted); font-weight:700 }
+    .field input, .field textarea{
+      background: rgba(255,255,255,0.02);
+      border:1px solid rgba(255,105,180,0.04);
+      padding:12px;
+      border-radius:10px;
+      color:var(--text);
+      font-size:14px;
+      min-width:0;
+    }
+
+    .send-btn{
+      padding:12px 16px;
+      border-radius:12px;
+      background: linear-gradient(90deg,var(--neon-pink),var(--neon-purple));
+      border:0;
+      color:#09080b;
+      font-weight:800;
+      cursor:pointer;
+      margin-top:6px;
+    }
+
+    /* footer */
+    footer {
+      padding:30px 6%;
+      color:var(--muted);
+      border-top:1px solid rgba(255,105,180,0.02);
+      margin-top:40px;
+    }
+
+    /* --- responsive --- */
+    @media (max-width:1060px){
+      .hero-section{ grid-template-columns: 1fr; padding:40px 5% 60px 5% }
+      .projects-grid{ grid-template-columns: repeat(2,1fr) }
+      .contact-section{ grid-template-columns: 1fr }
+      header{ padding:14px 5% }
+    }
+
+    @media (max-width:680px){
+      nav.top-nav{ display:none }
+      .profile-box{ min-height: auto }
+      .projects-grid{ grid-template-columns: 1fr }
+      .skills-grid{ grid-template-columns: 1fr }
+      header{ padding:12px 5% }
+    }
+
+    /* extra spacing lines for readability and file length (non-functional comments)
+       (you can remove these comments; they just make the file longer and easier to scan)
+    */
+
+  </style>
+</head>
+<body>
+  <!-- ================= BACKGROUNDS: SVG WAVE + CANVAS LAYERS ================= -->
+  <div id="waveWrap" class="bg-layer" aria-hidden="true">
+    <!-- animated slow-moving multi-layered SVG waves (neon pink/purple/blue) -->
+    <svg id="svgWaves" viewBox="0 0 1600 900" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#ff69b4" stop-opacity="0.85"/>
+          <stop offset="50%" stop-color="#b36aff" stop-opacity="0.65"/>
+          <stop offset="100%" stop-color="#4deeea" stop-opacity="0.35"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0" x2="1">
+          <stop offset="0%" stop-color="#b36aff" stop-opacity="0.55"/>
+          <stop offset="100%" stop-color="#4deeea" stop-opacity="0.16"/>
+        </linearGradient>
+      </defs>
+
+      <!-- wave layers -->
+      <g id="wavesGroup">
+        <path id="waveA" fill="url(#g1)" opacity="0.06" d=""></path>
+        <path id="waveB" fill="url(#g2)" opacity="0.08" d=""></path>
+        <path id="waveC" fill="#ff69b4" opacity="0.04" d=""></path>
+      </g>
+    </svg>
+  </div>
+
+  <!-- particle + matrix canvases overlay (canvas elements must be after svg for layering control) -->
+  <canvas id="particles" class="bg-layer"></canvas>
+  <canvas id="matrix" class="bg-layer"></canvas>
+
+  <!-- custom cursor -->
+  <div class="cursor" aria-hidden="true"></div>
+
+  <!-- ================= HEADER ================= -->
+  <header>
+    <div class="brand" onclick="scrollToTop();">
+      <div class="logo">ELM</div>
+      <h1>Erica Lorraine</h1>
+    </div>
+
+    <nav class="top-nav" aria-label="Main navigation">
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- ================= PAGE CONTENT ================= -->
+  <div class="page">
+
+    <!-- HERO with side profile box -->
+    <section class="hero-section" role="region" aria-label="Introduction">
+      <!-- PROFILE BOX: left column -->
+      <aside class="profile-box" aria-label="Profile">
+        <div class="profile-top">
+          <div class="profile-photo" title="Erica Lorraine Malba — profile photo">
+            <!-- replace skibdi.JPG in same folder -->
+            <img src="skibdi.JPG" alt="Erica Lorraine Malba" onerror="this.style.objectFit='cover'; this.src='https://via.placeholder.com/320x320/ff69b4/000?text=ELM'">
+          </div>
+
+          <div class="profile-meta">
+            <h2>Erica Lorraine Malba</h2>
+            <p class="muted">BSIT Student • Cybersecurity Enthusiast • University of St. La Salle — Bacolod City</p>
+
+            <div class="profile-stats">
+              <div class="pill">CTF &nbsp;•&nbsp;<strong>Active</strong></div>
+              <div class="pill">Open Source &nbsp;•&nbsp;<strong>Contributor</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-card" id="about">
+          <h3>About Erica</h3>
+          <p>
+            I am a Bachelor of Science in Information Technology student specializing in Cybersecurity. I focus on secure
+            design, penetration testing, threat hunting, and digital forensics. I enjoy hands-on problem solving and building
+            practical tools to improve security posture for small teams and learning communities.
+          </p>
+
+          <p style="margin-top:8px;color:var(--muted);font-size:13px">
+            Quick highlights: active CTF participant, small automation scripts contributor, learning threat intel & incident response.
+          </p>
+        </div>
+
+        <div class="contact-quick">
+          <button class="contact-btn" onclick="location.href='mailto:erica.malba@usls.edu'">
+            ✉️ Email
+          </button>
+
+          <button class="contact-btn" onclick="openLink('https://github.com/erica-malba')">
+            🐙 GitHub
+          </button>
+
+          <button class="contact-btn" onclick="openLink('https://www.linkedin.com/in/ericalorraine')">
+            💼 LinkedIn
+          </button>
+
+          <div style="flex:1"></div>
+        </div>
+      </aside>
+
+      <!-- HERO COPY (right column) -->
+      <main class="hero-copy" aria-label="Hero copy">
+        <h1>Hands-on cybersecurity — focused on practical, defensive solutions</h1>
+
+        <p class="lead">I build small tools, practice safe-by-design thinking, and learn through real challenges — CTFs, labs, and open-source work. I combine curiosity with discipline to harden systems and empower teams.</p>
+
+        <div class="cta-row">
+          <button class="cta primary" onclick="scrollToSection('#projects')">Explore Projects</button>
+          <button class="cta" onclick="scrollToSection('#contact')">Contact Me</button>
+        </div>
+
+        <div class="skills-grid" aria-hidden="false">
+          <!-- skill 1 -->
+          <div class="skill-row" data-percent="90" data-label="Python Security">
+            <div class="skill-info">
+              <div class="skill-title">Python Security</div>
+              <div class="progress"><div class="fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-num">90%</div>
+          </div>
+
+          <!-- skill 2 -->
+          <div class="skill-row" data-percent="85" data-label="Network Security">
+            <div class="skill-info">
+              <div class="skill-title">Network Security</div>
+              <div class="progress"><div class="fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-num">85%</div>
+          </div>
+
+          <!-- skill 3 -->
+          <div class="skill-row" data-percent="80" data-label="Penetration Testing">
+            <div class="skill-info">
+              <div class="skill-title">Penetration Testing</div>
+              <div class="progress"><div class="fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-num">80%</div>
+          </div>
+
+          <!-- skill 4 -->
+          <div class="skill-row" data-percent="75" data-label="Digital Forensics">
+            <div class="skill-info">
+              <div class="skill-title">Digital Forensics</div>
+              <div class="progress"><div class="fill" style="width:0%"></div></div>
+            </div>
+            <div class="skill-num">75%</div>
+          </div>
+        </div>
+
+        <!-- small summary stats line -->
+        <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap">
+          <div class="pill">Projects <strong style="margin-left:6px">12+</strong></div>
+          <div class="pill">CTFs <strong style="margin-left:6px">100+</strong></div>
+          <div class="pill">Tools <strong style="margin-left:6px">15</strong></div>
+        </div>
+
+      </main>
+    </section>
+
+    <!-- ================= PROJECTS BLOCK ================= -->
+    <section class="projects-section" id="projects" aria-label="Projects">
+      <h2 style="font-family:var(--mono); color:var(--neon-pink); margin-bottom:16px">Selected Projects</h2>
+
+      <div class="projects-grid" role="list">
+        <!-- 1 -->
+        <article class="project-card" role="listitem">
+          <div class="project-top">
+            <div class="project-title">Vulnerability Scanner</div>
+            <div style="font-size:12px;color:var(--muted)">Python • Automation</div>
+          </div>
+          <div class="project-desc">
+            Advanced Python-based vulnerability assessment tool for web applications and simple network scanning. Produces
+            JSON reports, supports custom plugins, and focuses on actionable remediation notes.
+          </div>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">Nmap</span><span class="tag">OWASP</span>
+          </div>
+          <div class="project-actions">
+            <button class="btn" onclick="openProjectModal(1)">Details</button>
+            <button class="btn btn-outline" onclick="openLink('#')">Repo</button>
+          </div>
+        </article>
+
+        <!-- 2 -->
+        <article class="project-card" role="listitem">
+          <div class="project-top">
+            <div class="project-title">Network Intrusion Detection</div>
+            <div style="font-size:12px;color:var(--muted)">Monitoring • ML</div>
+          </div>
+          <div class="project-desc">
+            Real-time network monitoring with heuristics and ML-based anomaly detection. Integrates PCAP ingestion and
+            alert exports for easy triage.
+          </div>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">ML</span><span class="tag">PCAP</span>
+          </div>
+          <div class="project-actions">
+            <button class="btn" onclick="openProjectModal(2)">Details</button>
+            <button class="btn btn-outline" onclick="openLink('#')">Demo</button>
+          </div>
+        </article>
+
+        <!-- 3 -->
+        <article class="project-card" role="listitem">
+          <div class="project-top">
+            <div class="project-title">Secure Chat App</div>
+            <div style="font-size:12px;color:var(--muted)">E2E • Websockets</div>
+          </div>
+          <div class="project-desc">
+            Prototype for an end-to-end encrypted messaging app emphasizing secure key exchange and forward secrecy for
+            ephemeral sessions — built for learning and demonstration.
+          </div>
+          <div class="project-tags">
+            <span class="tag">React</span><span class="tag">WebSockets</span><span class="tag">Crypto</span>
+          </div>
+          <div class="project-actions">
+            <button class="btn" onclick="openProjectModal(3)">Details</button>
+            <button class="btn btn-outline" onclick="openLink('#')">Repo</button>
+          </div>
+        </article>
+
+        <!-- 4 -->
+        <article class="project-card" role="listitem">
+          <div class="project-top">
+            <div class="project-title">Digital Forensics Toolkit</div>
+            <div style="font-size:12px;color:var(--muted)">IR • Recovery</div>
+          </div>
+          <div class="project-desc">
+            A collection of utilities for evidence collection, timeline generation, and basic file system analysis to support
+            incident response tasks during investigations.
+          </div>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">Forensics</span><span class="tag">Recovery</span>
+          </div>
+          <div class="project-actions">
+            <button class="btn" onclick="openProjectModal(4)">Details</button>
+            <button class="btn btn-outline" onclick="openLink('#')">Docs</button>
+          </div>
+        </article>
+
+        <!-- 5 -->
+        <article class="project-card" role="listitem">
+          <div class="project-top">
+            <div class="project-title">PenTesting Framework</div>
+            <div style="font-size:12px;color:var(--muted)">Automation</div>
+          </div>
+          <div class="project-desc">
+            A modular framework that allows chaining of reconnaissance, exploitation modules, and safe automated checks for labs.
+          </div>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">Kali</span><span class="tag">Automation</span>
+          </div>
+          <div class="project-actions">
+            <button class="btn" onclick="openProjectModal(5)">Details</button>
+            <button class="btn btn-outline" onclick="openLink('#')">Repo</button>
+          </div>
+        </article>
+
+        <!-- 6 -->
+        <article class="project-card" role="listitem">
+          <div class="project-top">
+            <div class="project-title">Security Analytics Dashboard</div>
+            <div style="font-size:12px;color:var(--muted)">SIEM • Visuals</div>
+          </div>
+          <div class="project-desc">
+            Front-end focused dashboard to visualize logs, alerts and metrics. Built prototypes with D3 and charting for quick insight.
+          </div>
+          <div class="project-tags">
+            <span class="tag">React</span><span class="tag">D3</span><span class="tag">SIEM</span>
+          </div>
+          <div class="project-actions">
+            <button class="btn" onclick="openProjectModal(6)">Details</button>
+            <button class="btn btn-outline" onclick="openLink('#')">Demo</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ================= SKILLS SECTION (expanded) ================= -->
+    <section style="padding:40px 6%; margin-top:10px" aria-label="Detailed skills">
+      <h2 style="font-family:var(--mono); color:var(--neon-purple); margin-bottom:12px">Skills & Focus Areas</h2>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr; gap:18px">
+        <div class="contact-card">
+          <h3>Core Technical Skills</h3>
+          <div style="margin-top:12px; display:flex; flex-direction:column; gap:10px">
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-weight:700; color:var(--neon-pink)">Python & Automation</div>
+              <div style="font-family:var(--mono); font-weight:800">90%</div>
+            </div>
+            <div style="height:10px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden">
+              <div class="fill" style="width:90%; height:100%; background:linear-gradient(90deg,var(--neon-pink),var(--neon-purple))"></div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-weight:700; color:var(--neon-blue)">Network Security</div>
+              <div style="font-family:var(--mono); font-weight:800">85%</div>
+            </div>
+            <div style="height:10px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden">
+              <div class="fill" style="width:85%; height:100%; background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple))"></div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-weight:700; color:var(--neon-pink)">Web Security</div>
+              <div style="font-family:var(--mono); font-weight:800">88%</div>
+            </div>
+            <div style="height:10px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden">
+              <div class="fill" style="width:88%; height:100%; background:linear-gradient(90deg,var(--neon-pink),var(--neon-blue))"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <h3>Research & Soft Skills</h3>
+          <div style="margin-top:12px; display:flex; flex-direction:column; gap:10px">
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-weight:700; color:var(--neon-purple)">Threat Analysis</div>
+              <div style="font-family:var(--mono); font-weight:800">82%</div>
+            </div>
+            <div style="height:10px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden">
+              <div class="fill" style="width:82%; height:100%; background:linear-gradient(90deg,var(--neon-purple),var(--neon-blue))"></div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-weight:700; color:var(--neon-pink)">Digital Forensics</div>
+              <div style="font-family:var(--mono); font-weight:800">75%</div>
+            </div>
+            <div style="height:10px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden">
+              <div class="fill" style="width:75%; height:100%; background:linear-gradient(90deg,var(--neon-pink),var(--neon-purple))"></div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between">
+              <div style="font-weight:700; color:var(--neon-blue)">Team Collaboration</div>
+              <div style="font-family:var(--mono); font-weight:800">92%</div>
+            </div>
+            <div style="height:10px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden">
+              <div class="fill" style="width:92%; height:100%; background:linear-gradient(90deg,var(--neon-blue),var(--neon-pink))"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTACT SECTION ================= -->
+    <section id="contact" class="contact-section" aria-label="Contact">
+      <div class="contact-card">
+        <h3>Contact Me</h3>
+        <p style="color:var(--muted)">Have a question, collaboration, or opportunity? Drop a message — I reply to thoughtful emails and polite invitations.</p>
+
+        <form class="contact-form" onsubmit="handleContactSubmit(event)">
+          <div class="field">
+            <label for="cname">Name</label>
+            <input id="cname" name="name" placeholder="Your name" required>
+          </div>
+
+          <div class="field">
+            <label for="cemail">Email</label>
+            <input id="cemail" type="email" name="email" placeholder="you@example.com" required>
+          </div>
+
+          <div class="field">
+            <label for="cmessage">Message</label>
+            <textarea id="cmessage" name="message" rows="5" placeholder="How can I help?" required></textarea>
+          </div>
+
+          <button class="send-btn" type="submit">Send Message</button>
+        </form>
+      </div>
+
+      <aside style="position:relative">
+        <div class="contact-card">
+          <h3>Quick contact</h3>
+          <div class="contact-list">
+            <div class="contact-item"><div>📧</div><div><strong>Email</strong><div style="font-size:13px;color:var(--muted)">erica.malba@usls.edu</div></div></div>
+            <div class="contact-item"><div>🐙</div><div><strong>GitHub</strong><div style="font-size:13px;color:var(--muted)">github.com/erica-malba</div></div></div>
+            <div class="contact-item"><div>💼</div><div><strong>LinkedIn</strong><div style="font-size:13px;color:var(--muted)">linkedin.com/in/ericalorraine</div></div></div>
+            <div class="contact-item"><div>🎓</div><div><strong>Education</strong><div style="font-size:13px;color:var(--muted)">BSIT — USLS</div></div></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>&copy; 2025 Erica Lorraine Malba</div>
+        <div style="color:var(--muted)">Made with curiosity • Neon vibes • Always learning</div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ================= PROJECT MODAL (single shared modal updated by JS) ================= -->
+  <div id="projectModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-card" role="document" aria-labelledby="modalTitle">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <h2 id="modalTitle" style="font-family:var(--mono);color:var(--neon-pink)">Project Title</h2>
+          <div id="modalMeta" style="color:var(--muted);font-size:13px">meta</div>
+        </div>
+        <div>
+          <button class="modal-close" onclick="closeProjectModal()">Close ✕</button>
+        </div>
+      </div>
+
+      <div id="modalBody" style="margin-top:14px;color:var(--text);line-height:1.6">
+        <!-- dynamic content -->
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="closeProjectModal()">Close</button>
+        <button class="btn btn-outline" onclick="openLink('#')">View Repo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT: interactions, backgrounds, animations ================= -->
+  <script>
+    /* ================= utility helpers ================= */
+    function openLink(u){
+      if(!u) return;
+      window.open(u,'_blank','noopener');
+    }
+
+    function scrollToSection(sel){
+      const el = document.querySelector(sel);
+      if(!el) return;
+      el.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+
+    function scrollToTop(){
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    /* ================= Cursor glow ================= */
+    const cursor = document.querySelector('.cursor');
+    document.addEventListener('mousemove', e=>{
+      cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%) scale(1)`;
+    });
+    // subtle scaling on mousedown
+    document.addEventListener('mousedown', ()=> cursor.style.transform += ' scale(0.85)');
+    document.addEventListener('mouseup', ()=> cursor.style.transform = cursor.style.transform.replace(' scale(0.85)',''));
+
+    /* ================= SVG wave generation & animation ================= */
+    const svgNS = "http://www.w3.org/2000/svg";
+    const waveA = document.getElementById('waveA');
+    const waveB = document.getElementById('waveB');
+    const waveC = document.getElementById('waveC');
+
+    // generate smooth random wave path with multiple control points
+    function createWavePath(seed, amplitude=40, frequency=3, offsetY=200){
+      const w = window.innerWidth;
+      const steps = Math.max(6, Math.round(w / 160));
+      let path = `M 0 ${offsetY} `;
+      for(let i=0;i<=steps;i++){
+        const x = (i/steps) * w;
+        const phase = (i + seed) * 0.7;
+        const y = offsetY + Math.sin(phase * frequency * 0.6) * amplitude * (1 + Math.sin(seed*0.2));
+        // use quadratic curve for smoothness
+        if(i===0) path += `L ${x} ${y} `;
+        else path += `Q ${x - (w/steps)/2} ${y + amplitude*0.5} ${x} ${y} `;
+      }
+      path += `L ${w} 900 L 0 900 Z`;
+      return path;
+    }
+
+    function paintWaves(){
+      const t = Date.now() / 2000;
+      waveA.setAttribute('d', createWavePath(t*0.5, 36, 2.1, 320 + Math.sin(t*0.3)*18));
+      waveB.setAttribute('d', createWavePath(t*0.8 + 10, 24, 1.6, 420 + Math.cos(t*0.25)*20));
+      waveC.setAttribute('d', createWavePath(t*1.4 + 40, 16, 1.1, 520 + Math.sin(t*0.15)*12));
+      requestAnimationFrame(paintWaves);
+    }
+
+    // start the svg wave painter
+    paintWaves();
+
+    /* ================= PARTICLE CANVAS (soft neon blobs) ================= */
+    const pcanvas = document.getElementById('particles');
+    const pctx = pcanvas.getContext('2d');
+
+    function resizePCanvas(){
+      pcanvas.width = window.innerWidth;
+      pcanvas.height = window.innerHeight;
+    }
+    resizePCanvas();
+    window.addEventListener('resize', resizePCanvas);
+
+    const particles = [];
+    const PARTICLE_COUNT = Math.max(40, Math.round(window.innerWidth / 40));
+    for(let i=0;i<PARTICLE_COUNT;i++){
+      particles.push({
+        x: Math.random()*pcanvas.width,
+        y: Math.random()*pcanvas.height,
+        r: Math.random()*8 + 2,
+        dx: (Math.random()-0.5) * 0.6,
+        dy: (Math.random()-0.5) * 0.6,
+        col: `hsla(${330 + Math.random()*60}, 90%, 65%, 0.08)`
+      });
+    }
+
+    function drawParticles(){
+      pctx.clearRect(0,0,pcanvas.width,pcanvas.height);
+      for(let p of particles){
+        pctx.beginPath();
+        const grad = pctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*4);
+        grad.addColorStop(0, hexToRgba('#ff69b4', 0.35));
+        grad.addColorStop(0.5, hexToRgba('#b36aff', 0.12));
+        grad.addColorStop(1, hexToRgba('#4deeea', 0.02));
+        pctx.fillStyle = grad;
+        pctx.arc(p.x, p.y, p.r*4, 0, Math.PI*2);
+        pctx.fill();
+
+        // move
+        p.x += p.dx;
+        p.y += p.dy;
+
+        // wrap around
+        if(p.x < -50) p.x = pcanvas.width + 50;
+        if(p.y < -50) p.y = pcanvas.height + 50;
+        if(p.x > pcanvas.width + 50) p.x = -50;
+        if(p.y > pcanvas.height + 50) p.y = -50;
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    function hexToRgba(hex, a=1){
+      // quick hex parser
+      const h = hex.replace('#','');
+      const bigint = parseInt(h,16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    /* ================= MATRIX CANVAS (subtle falling characters) ================= */
+    const mcanvas = document.getElementById('matrix');
+    const mctx = mcanvas.getContext('2d');
+
+    function resizeMCanvas(){
+      mcanvas.width = window.innerWidth;
+      mcanvas.height = window.innerHeight;
+    }
+    resizeMCanvas();
+    window.addEventListener('resize', resizeMCanvas);
+
+    const letters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ'.split('');
+    const fontSize = 12;
+    let columns = Math.floor(window.innerWidth / fontSize);
+    let drops = new Array(columns).fill(0).map(()=>Math.random()*-300);
+
+    function drawMatrix(){
+      // translucent overlay
+      mctx.fillStyle = 'rgba(0,0,0,0.06)';
+      mctx.fillRect(0,0,mcanvas.width, mcanvas.height);
+
+      mctx.font = fontSize + 'px monospace';
+      mctx.fillStyle = 'rgba(255,105,180,0.13)';
+
+      for(let i=0;i<drops.length;i++){
+        const text = letters[Math.floor(Math.random()*letters.length)];
+        const x = i*fontSize;
+        const y = drops[i]*fontSize;
+        mctx.fillText(text, x, y);
+
+        if(y > mcanvas.height && Math.random() > 0.985){
+          drops[i] = 0;
+        }
+        drops[i] += 0.7; // slow falling
+      }
+      requestAnimationFrame(drawMatrix);
+    }
+    drawMatrix();
+
+    /* ================= SCROLL REVEAL + PROGRESS ANIMATION ================= */
+    const skillRows = document.querySelectorAll('.skill-row');
+    const observer = new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          const el = entry.target;
+          const percent = parseInt(el.getAttribute('data-percent')||el.dataset.percent||80,10);
+          const fill = el.querySelector('.fill');
+          if(fill){
+            fill.style.width = percent + '%';
+          }
+          // also animate numeric displayed separately (skill-num)
+          const num = el.querySelector('.skill-num');
+          if(num && !num.dataset.animated){
+            num.dataset.animated = 'true';
+            animateValue(num, 0, percent, 900);
+          }
+        }
+      });
+    }, {threshold:0.25});
+
+    skillRows.forEach(r => observer.observe(r));
+
+    // also animate the top small progress bars (detailed section)
+    document.querySelectorAll('.contact-card .fill').forEach(el=>{
+      // if width already set in style, we can animate from 0 to that width
+      const startW = parseFloat(el.style.width) || 0;
+      el.style.width = '0%';
+      setTimeout(()=> el.style.width = startW+'%', 150);
+    });
+
+    function animateValue(node, start, end, duration){
+      const startTime = performance.now();
+      function step(now){
+        const t = Math.min(1, (now - startTime)/duration);
+        const v = Math.round(start + (end-start) * easeOutCubic(t));
+        node.textContent = v + '%';
+        if(t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    function easeOutCubic(t){ return (--t) * t * t + 1 }
+
+    /* ================= PROJECT MODAL LOGIC ================= */
+    const modal = document.getElementById('projectModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMeta = document.getElementById('modalMeta');
+    const modalBody = document.getElementById('modalBody');
+
+    const projects = {
+      1: {
+        title: "Vulnerability Scanner",
+        meta: "Python • Automation • OWASP",
+        body: `<p><strong>Summary</strong>: A modular vulnerability scanner written in Python. Focuses on web app checks (SQLi, XSS), header security, and configurable scan rules.</p>
+               <p><strong>Features</strong>: plugin interface, JSON output, reporting templates, OWASP mapping.</p>
+               <p><strong>Notes</strong>: built for education and lab use. Not for unlawful scanning.</p>`
+      },
+      2: {
+        title: "Network Intrusion Detection",
+        meta: "PCAP ingestion • ML heuristics",
+        body: `<p><strong>Summary</strong>: Real-time network observability prototype that flags anomalous flows.</p>
+               <p><strong>Tech</strong>: scapy/pcap parsing, sliding-window features, small classifier models for experiments.</p>`
+      },
+      3: {
+        title: "Secure Chat App",
+        meta: "E2E messaging • WebSockets",
+        body: `<p><strong>Summary</strong>: Demonstration of secure session management with ephemeral keys and forward secrecy.</p>
+               <p><strong>Tech</strong>: WebSocket server, cryptographic key-exchange simulation, UX for secure messaging.</p>`
+      },
+      4: {
+        title: "Digital Forensics Toolkit",
+        meta: "IR utilities • Timeline generation",
+        body: `<p><strong>Summary</strong>: Set of tools to collect system artifacts and construct timelines for incident response.</p>
+               <p><strong>Includes</strong>: simple carving tools, metadata extractors, and timeline export.</p>`
+      },
+      5: {
+        title: "PenTesting Framework",
+        meta: "Automation • Modular",
+        body: `<p><strong>Summary</strong>: Framework for chaining recon to exploit modules in lab environments with safeguards and logging.</p>`
+      },
+      6: {
+        title: "Security Analytics Dashboard",
+        meta: "D3.js • React prototype",
+        body: `<p><strong>Summary</strong>: Front-end visualization for alerts and metrics with interactive drilldowns.</p>`
+      }
+    };
+
+    function openProjectModal(id){
+      const p = projects[id];
+      if(!p) return;
+      modalTitle.textContent = p.title;
+      modalMeta.textContent = p.meta;
+      modalBody.innerHTML = p.body;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+    }
+    function closeProjectModal(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    }
+    // close modal on ESC
+    window.addEventListener('keydown', e => { if(e.key === 'Escape') closeProjectModal(); });
+
+    /* ================= Contact form handling (local only) ================= */
+    function handleContactSubmit(e){
+      e.preventDefault();
+      const form = e.target;
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const message = form.message.value.trim();
+      if(!name || !email || !message){
+        alert('Please fill all fields before sending.');
+        return;
+      }
+      // === Simulate sending ===
+      const btn = document.querySelector('.send-btn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      setTimeout(()=>{
+        btn.disabled = false;
+        btn.textContent = 'Send Message';
+        form.reset();
+        alert('Thanks, your message was sent (simulated). I will reply soon!');
+      }, 1000);
+    }
+
+    /* ================= Responsive adjustments ================= */
+    function recalc(){
+      // recalc matrix columns
+      columns = Math.floor(window.innerWidth / fontSize);
+      drops = new Array(columns).fill(0).map(()=>Math.random()*-200);
+
+      // update particles if needed
+    }
+    window.addEventListener('resize', recalc);
+
+    /* ================= helper: animate counters in profile (optional) ================= */
+    (function animateProfileCounters(){
+      // example simple pulse on pills
+      const pills = document.querySelectorAll('.pill');
+      let i=0;
+      setInterval(()=>{
+        pills.forEach((p, idx) => p.style.transform = 'scale(1)');
+        pills[i%pills.length].style.transform = 'scale(1.04)';
+        i++;
+      }, 2000);
+    })();
+
+    /* ================= small accessibility improvements ================= */
+    // Focus outlines for keyboard nav
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'Tab') document.body.classList.add('focus-visible');
+    });
+
+    /* ================= finalize: small startup animations ================= */
+    window.addEventListener('load', ()=>{
+      // fade-in sections gently
+      document.querySelectorAll('section').forEach((s, idx)=>{
+        s.style.opacity = 0;
+        s.style.transform = 'translateY(18px)';
+        setTimeout(()=> {
+          s.style.transition = 'opacity 700ms ease, transform 700ms ease';
+          s.style.opacity = 1;
+          s.style.transform = 'translateY(0)';
+        }, 80 * idx);
+      });
+
+      // animate skill fills visible near top
+      document.querySelectorAll('.skill-row').forEach((r, idx)=>{
+        setTimeout(()=>{
+          const fill = r.querySelector('.fill');
+          const percent = parseInt(r.getAttribute('data-percent')||80,10);
+          if(fill) fill.style.width = percent + '%';
+          const num = r.querySelector('.skill-num');
+          if(num) num.textContent = percent + '%';
+        }, 400 + idx*120);
+      });
+    });
+
+    /* ================= Extra: gentle parallax on mouse move for depth ================= */
+    document.addEventListener('mousemove', (e)=>{
+      const w = window.innerWidth, h = window.innerHeight;
+      const nx = (e.clientX - w/2) / w;
+      const ny = (e.clientY - h/2) / h;
+      // nudge svg waves slightly
+      document.getElementById('wavesGroup').style.transform = `translate(${nx*12}px, ${ny*8}px)`;
+      // particles subtle shift
+      pcanvas.style.transform = `translate(${nx*8}px, ${ny*6}px)`;
+      mcanvas.style.transform = `translate(${nx*4}px, ${ny*2}px)`;
+    });
+
+    /* ================= End of script ================= */
+  </script>
+</body>
+</html>
